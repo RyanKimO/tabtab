@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val repository: UserRepository
 ) {
-
     @GetMapping("/{id}")
     fun getUser(
         @PathVariable id: Long,
