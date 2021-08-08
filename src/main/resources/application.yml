@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: "jdbc:mariadb://dmldus-maria.cipsc2svfyax.ap-northeast-2.rds.amazonaws.com:3306/tabtab"
+    url: "jdbc:mariadb://dmldus-maria.cipsc2svfyax.ap-northeast-2.rds.amazonaws.com:3306/tabtab?serverTimezone=Asia/Seoul"
     username: admin
     password: admin-dmldus
   jpa:

@@ -1,6 +1,6 @@
 package com.buta.tabtab_match.model
 
-import java.time.Instant
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.MappedSuperclass
 import javax.persistence.PrePersist
@@ -10,21 +10,18 @@ import javax.persistence.PreUpdate
 abstract class AbstractTimestampEntity {
 
     @Column(name = "reg_ts", nullable = false, updatable = false)
-    var createdAt: Instant? = null
+    var createdAt: LocalDateTime? = null
 
     @Column(name = "upd_ts", insertable = false)
-    var updatedAt: Instant? = null
-
-    fun getRegTs() = createdAt?.toEpochMilli() ?: 0L
-    fun getUpdTs() = updatedAt?.toEpochMilli() ?: 0L
+    var updatedAt: LocalDateTime? = null
 
     @PrePersist
     protected fun onCreate() {
-        createdAt = Instant.now()
+        createdAt = LocalDateTime.now()
     }
 
     @PreUpdate
     protected fun onUpdate() {
-        updatedAt = Instant.now()
+        updatedAt = LocalDateTime.now()
     }
 }
