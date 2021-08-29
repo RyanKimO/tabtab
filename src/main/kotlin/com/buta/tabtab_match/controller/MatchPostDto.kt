@@ -25,5 +25,6 @@ data class MatchPostDto(
     var skillLevel: Int? = null,
     var description: String? = null,
     var createdAt: LocalDateTime?,
-    var updatedAt: LocalDateTime?
+    var updatedAt: LocalDateTime?,
+    var isMe: Boolean,
 )

@@ -14,8 +14,6 @@ data class MatchPost(
     val userId: Long,
     @Column(name = "match_datetime")
     val matchDatetime: LocalDateTime? = null,
-    @Column(name = "match_year_month")
-    var matchYearMonth: Int? = null,
     @Column(name = "location_title")
     var locationTitle: String? = null,
     @Column(name = "location_full")
@@ -48,4 +46,8 @@ data class MatchPost(
     var skillLevel: Int? = null,
     @Column(name = "description")
     var description: String? = null,
-) : AbstractTimestampEntity()
+) : AbstractTimestampEntity() {
+
+    @Column(name = "match_year_month")
+    val matchYearMonth: Int? = matchDatetime?.let { it.year * 100 + it.month.value }
+}

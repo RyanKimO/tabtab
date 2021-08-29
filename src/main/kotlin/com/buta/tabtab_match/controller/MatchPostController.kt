@@ -2,6 +2,7 @@ package com.buta.tabtab_match.controller
 
 import com.buta.tabtab_match.model.MatchPost
 import com.buta.tabtab_match.model.MatchPostRepository
+import com.buta.tabtab_match.utils.TAB_USER_HEADER
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.*
 
@@ -13,35 +14,47 @@ class MatchPostController(
     @ApiOperation("글쓰기")
     @PostMapping
     fun saveMatchPost(
+        @RequestHeader(TAB_USER_HEADER) uid: Long,
         @RequestBody dto: MatchPostDto
     ): MatchPostDto {
-        val saved = repository.save(toMatchPostEntity(dto).apply {
-            matchYearMonth = matchDatetime?.let { it.year * 100 + it.month.value }
-        })
-        return toMatchPostDto(saved)
+        val saved = repository.save(toMatchPostEntity(dto))
+        return toMatchPostDto(saved, uid)
+    }
+
+    @ApiOperation("게시글 id 단위 조회(상세)")
+    @GetMapping("/{id}")
+    fun getMatchPostById(
+        @RequestHeader(TAB_USER_HEADER) uid: Long,
+        @PathVariable id: Long,
+    ): MatchPostDto {
+        val post = repository.findById(id).get()
+        return toMatchPostDto(post, uid)
     }
 
     @ApiOperation("게시글 월단위 조회")
     @GetMapping("/monthly")
     fun getMatchPostMonthly(
+        @RequestHeader(TAB_USER_HEADER) uid: Long,
         @RequestParam yyyyMM: Int,
     ): List<MatchPostDto> {
         val posts = repository.findByMatchYearMonth(yyyyMM)
-        return posts.map(::toMatchPostDto)
+        return posts.map { toMatchPostDto(it, uid) }
     }
 
     @ApiOperation("게시글 유저단위 조회")
     @GetMapping("/user/{userId}")
     fun getMatchPostByUser(
+        @RequestHeader(TAB_USER_HEADER) uid: Long,
         @PathVariable userId: Long,
     ): List<MatchPostDto> {
         val posts = repository.findByUserId(userId)
-        return posts.map(::toMatchPostDto)
+        return posts.map { toMatchPostDto(it, uid) }
     }
 
     @ApiOperation("게시글 삭제")
     @DeleteMapping("/{postId}")
     fun deleteMatchPost(
+        @RequestHeader(TAB_USER_HEADER) uid: Long,
         @PathVariable postId: Long,
     ): Boolean {
         repository.deleteById(postId)
@@ -51,7 +64,6 @@ class MatchPostController(
     private fun toMatchPostEntity(dto: MatchPostDto) = MatchPost(
         userId = dto.userId,
         matchDatetime = dto.matchDatetime,
-        matchYearMonth = dto.matchYearMonth,
         locationTitle = dto.locationTitle,
         locationFull = dto.locationFull,
         locationX = dto.locationX,
@@ -72,6 +84,7 @@ class MatchPostController(
 
     private fun toMatchPostDto(
         entity: MatchPost,
+        userId: Long
     ) = MatchPostDto(
         id = entity.id!!,
         userId = entity.userId,
@@ -94,6 +107,7 @@ class MatchPostController(
         skillLevel = entity.skillLevel,
         description = entity.description,
         createdAt = entity.createdAt,
-        updatedAt = entity.updatedAt
+        updatedAt = entity.updatedAt,
+        isMe = entity.userId == userId
     )
 }
