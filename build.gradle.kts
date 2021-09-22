@@ -32,8 +32,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-noarg:$embeddedKotlinVersion")
 
     // Swagger
-    implementation("io.springfox:springfox-swagger2:2.8.0")
-    implementation("io.springfox:springfox-swagger-ui:2.8.0")
+    implementation("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
