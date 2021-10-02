@@ -2,6 +2,7 @@ package com.buta.tabtab_match.controller
 
 import com.buta.tabtab_match.model.MatchPost
 import com.buta.tabtab_match.model.MatchPostRepository
+import com.buta.tabtab_match.utils.ApiResponse
 import com.buta.tabtab_match.utils.TAB_USER_HEADER
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.*
@@ -16,9 +17,9 @@ class MatchPostController(
     fun saveMatchPost(
         @RequestHeader(TAB_USER_HEADER) uid: Long,
         @RequestBody dto: MatchPostDto
-    ): MatchPostDto {
+    ): ApiResponse<MatchPostDto> {
         val saved = repository.save(toMatchPostEntity(dto))
-        return toMatchPostDto(saved, uid)
+        return ApiResponse.success(toMatchPostDto(saved, uid))
     }
 
     @ApiOperation("게시글 id 단위 조회(상세)")
@@ -26,29 +27,28 @@ class MatchPostController(
     fun getMatchPostById(
         @RequestHeader(TAB_USER_HEADER) uid: Long,
         @PathVariable id: Long,
-    ): MatchPostDto {
+    ): ApiResponse<MatchPostDto> {
         val post = repository.findById(id).get()
-        return toMatchPostDto(post, uid)
+        return ApiResponse.success(toMatchPostDto(post, uid))
     }
 
     @ApiOperation("게시글 월단위 조회")
     @GetMapping("/monthly")
     fun getMatchPostMonthly(
-        @RequestHeader(TAB_USER_HEADER) uid: Long,
+        @RequestHeader(TAB_USER_HEADER) uid: Long = -1,
         @RequestParam yyyyMM: Int,
-    ): List<MatchPostDto> {
+    ): ApiResponse<List<MatchPostDto>> {
         val posts = repository.findByMatchYearMonth(yyyyMM)
-        return posts.map { toMatchPostDto(it, uid) }
+        return ApiResponse.success(posts.map { toMatchPostDto(it, uid) })
     }
 
     @ApiOperation("게시글 유저단위 조회")
     @GetMapping("/user/{userId}")
     fun getMatchPostByUser(
-        @RequestHeader(TAB_USER_HEADER) uid: Long,
         @PathVariable userId: Long,
-    ): List<MatchPostDto> {
+    ): ApiResponse<List<MatchPostDto>> {
         val posts = repository.findByUserId(userId)
-        return posts.map { toMatchPostDto(it, uid) }
+        return ApiResponse.success(posts.map { toMatchPostDto(it, userId) })
     }
 
     @ApiOperation("게시글 삭제")
@@ -56,9 +56,9 @@ class MatchPostController(
     fun deleteMatchPost(
         @RequestHeader(TAB_USER_HEADER) uid: Long,
         @PathVariable postId: Long,
-    ): Boolean {
+    ): ApiResponse<Boolean> {
         repository.deleteById(postId)
-        return true
+        return ApiResponse.success(true)
     }
 
     private fun toMatchPostEntity(dto: MatchPostDto) = MatchPost(

@@ -4,6 +4,7 @@ import com.buta.tabtab_match.model.TabUser
 import com.buta.tabtab_match.model.TabUserDetails
 import com.buta.tabtab_match.model.UserDetailsRepository
 import com.buta.tabtab_match.model.UserRepository
+import com.buta.tabtab_match.utils.ApiResponse
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.*
 
@@ -18,7 +19,7 @@ class UserController(
     fun saveUser(
         @RequestBody dto: TabUserDto,
         @RequestHeader secret: String = "empty",
-    ): TabUserDto {
+    ): ApiResponse<TabUserDto> {
         val saved = repository.save(
             TabUser(
                 id = dto.id,
@@ -28,23 +29,23 @@ class UserController(
                 secret = secret
             )
         )
-        return tabUserDto(saved)
+        return ApiResponse.success(tabUserDto(saved))
     }
 
     @ApiOperation("회원 상세정보 조회")
     @GetMapping("/{id}")
     fun getUserDetails(
         @PathVariable id: Long,
-    ): TabUserDetailDto {
+    ): ApiResponse<TabUserDetailDto> {
         val entity = repository.findById(id).get()
-        return tabUserDetailDto(entity)
+        return ApiResponse.success(tabUserDetailDto(entity))
     }
 
     @ApiOperation("회원 상세정보 저장/수정")
     @PostMapping(headers = ["secret"])
     fun saveUserDetails(
         @RequestBody dto: TabUserDetailDto,
-    ): TabUserDetailDto {
+    ): ApiResponse<TabUserDetailDto> {
         val entity = repository.findById(dto.id).get()
 
         val saveTarget = entity.details?.let {
@@ -71,7 +72,7 @@ class UserController(
         entity.details = saveTarget
         repository.save(entity)
 
-        return tabUserDetailDto(entity)
+        return ApiResponse.success(tabUserDetailDto(entity))
     }
 
     private fun tabUserDetailDto(
