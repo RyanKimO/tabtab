@@ -18,7 +18,7 @@ class UserController(
     @PostMapping(path = ["/add"], headers = ["secret"])
     fun saveUser(
         @RequestBody dto: TabUserDto,
-        @RequestHeader secret: String = "empty",
+        @RequestHeader secret: String,
     ): ApiResponse<TabUserDto> {
         val saved = repository.save(
             TabUser(
@@ -33,11 +33,11 @@ class UserController(
     }
 
     @ApiOperation("회원 상세정보 조회")
-    @GetMapping("/{id}")
+    @GetMapping("/{userNo}")
     fun getUserDetails(
-        @PathVariable id: Long,
+        @PathVariable userNo: Long,
     ): ApiResponse<TabUserDetailDto> {
-        val entity = repository.findById(id).get()
+        val entity = repository.findById(userNo).get()
         return ApiResponse.success(tabUserDetailDto(entity))
     }
 
@@ -98,6 +98,7 @@ class UserController(
         name = entity.name,
         email = entity.email,
         phone = entity.phone,
+        secret = entity.secret,
         createdAt = entity.createdAt,
         updatedAt = entity.updatedAt
     )

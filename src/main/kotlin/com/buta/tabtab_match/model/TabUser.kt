@@ -17,7 +17,7 @@ data class TabUser(
     @Column(name = "phone")
     var phone: String? = null,
     @Column(name = "secret")
-    var secret: String? = null,
+    var secret: String,
 
     @OneToOne(cascade = [CascadeType.ALL], mappedBy = "tabUser")
     @MapKey(name = "user_id")
