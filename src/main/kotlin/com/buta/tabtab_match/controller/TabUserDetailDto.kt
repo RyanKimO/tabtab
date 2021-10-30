@@ -1,11 +1,11 @@
 package com.buta.tabtab_match.controller
 
 import io.swagger.annotations.ApiModelProperty
-import java.time.LocalDateTime
 
 data class TabUserDetailDto(
     @ApiModelProperty("유저 id")
     var id: Long,
+
     var name: String? = null,
     var email: String? = null,
     var phone: String? = null,
@@ -13,12 +13,10 @@ data class TabUserDetailDto(
     var displayPhone: String? = null,
     var ageRange: Int? = null,
     var skillLevel: Int? = null,
+
     @ApiModelProperty("팀생성시 세팅")
     val teamIds: String? = null,
+
     val profileImgUrl: String? = null,
     val introduction: String? = null,
-    @ApiModelProperty("응답용")
-    var createdAt: LocalDateTime? = null,
-    @ApiModelProperty("응답용")
-    var updatedAt: LocalDateTime? = null
 )

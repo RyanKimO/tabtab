@@ -2,7 +2,6 @@ package com.buta.tabtab_match.controller
 
 import com.buta.tabtab_match.model.TabUser
 import com.buta.tabtab_match.model.TabUserDetails
-import com.buta.tabtab_match.model.UserDetailsRepository
 import com.buta.tabtab_match.model.UserRepository
 import com.buta.tabtab_match.utils.ApiResponse
 import io.swagger.annotations.ApiOperation
@@ -11,8 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/tabtab/user")
 class UserController(
-    private val repository: UserRepository,
-    private val detailsRepository: UserDetailsRepository
+    private val repository: UserRepository
 ) {
     @ApiOperation("회원가입")
     @PostMapping(path = ["/add"], headers = ["secret"])
@@ -20,24 +18,30 @@ class UserController(
         @RequestBody dto: TabUserDto,
         @RequestHeader secret: String,
     ): ApiResponse<TabUserDto> {
-        val saved = repository.save(
-            TabUser(
-                id = dto.id,
-                name = dto.name,
-                email = dto.email,
-                phone = dto.phone,
-                secret = secret
+        val saved = try {
+            repository.save(
+                TabUser(
+                    id = dto.id,
+                    name = dto.name,
+                    email = dto.email,
+                    phone = dto.phone,
+                    secret = secret
+                )
             )
-        )
+        } catch (e: Exception) {
+            return ApiResponse.error(null, e.message)
+        }
         return ApiResponse.success(tabUserDto(saved))
     }
 
     @ApiOperation("회원 상세정보 조회")
-    @GetMapping("/{userNo}")
+    @GetMapping("/{id}")
     fun getUserDetails(
-        @PathVariable userNo: Long,
+        @PathVariable id: Long,
     ): ApiResponse<TabUserDetailDto> {
-        val entity = repository.findById(userNo).get()
+        val entity = repository.findById(id).orElseGet(null)
+            ?: return ApiResponse.error(null, "존재하지 않는 회원 id 입니다")
+
         return ApiResponse.success(tabUserDetailDto(entity))
     }
 
@@ -46,7 +50,8 @@ class UserController(
     fun saveUserDetails(
         @RequestBody dto: TabUserDetailDto,
     ): ApiResponse<TabUserDetailDto> {
-        val entity = repository.findById(dto.id).get()
+        val entity = repository.findById(dto.id).orElseGet(null)
+            ?: return ApiResponse.error(null, "존재하지 않는 회원 id 입니다.")
 
         val saveTarget = entity.details?.let {
             it.userId = it.userId
@@ -89,8 +94,6 @@ class UserController(
         teamIds = entity.details?.teamIds,
         profileImgUrl = entity.details?.profileImgUrl,
         introduction = entity.details?.introduction,
-        createdAt = entity.createdAt,
-        updatedAt = entity.updatedAt
     )
 
     private fun tabUserDto(entity: TabUser) = TabUserDto(
@@ -98,8 +101,5 @@ class UserController(
         name = entity.name,
         email = entity.email,
         phone = entity.phone,
-        secret = entity.secret,
-        createdAt = entity.createdAt,
-        updatedAt = entity.updatedAt
     )
 }
