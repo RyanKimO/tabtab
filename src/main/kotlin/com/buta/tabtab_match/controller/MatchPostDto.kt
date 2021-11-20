@@ -1,5 +1,6 @@
 package com.buta.tabtab_match.controller
 
+import io.swagger.annotations.ApiModelProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -10,7 +11,9 @@ data class MatchPostDto(
     var matchYearMonth: Int? = null,
     var locationTitle: String? = null,
     var locationFull: String? = null,
+    @ApiModelProperty("경도")
     var locationX: BigDecimal? = null, // 경도 longitude
+    @ApiModelProperty("위도")
     var locationY: BigDecimal? = null, // 위도 lat
     var playerCnt: Int? = null,
     var playerGender: String? = null,
@@ -24,7 +27,10 @@ data class MatchPostDto(
     var ageRangeEnd: Int? = null,
     var skillLevel: Int? = null,
     var description: String? = null,
+
+    @ApiModelProperty("응답용")
     var createdAt: LocalDateTime?,
+    @ApiModelProperty("응답용")
     var updatedAt: LocalDateTime?,
     var isMe: Boolean,
 )

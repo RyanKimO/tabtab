@@ -43,12 +43,12 @@ class MatchPostController(
     }
 
     @ApiOperation("게시글 유저단위 조회")
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user/{uid}")
     fun getMatchPostByUser(
-        @PathVariable userId: Long,
+        @PathVariable uid: Long,
     ): ApiResponse<List<MatchPostDto>> {
-        val posts = repository.findByUserId(userId)
-        return ApiResponse.success(posts.map { toMatchPostDto(it, userId) })
+        val posts = repository.findByUserId(uid)
+        return ApiResponse.success(posts.map { toMatchPostDto(it, uid) })
     }
 
     @ApiOperation("게시글 삭제")
